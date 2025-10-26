@@ -1,0 +1,5 @@
+{
+  "name": "Admin Dashboard",
+  "description": "A comprehensive admin dashboard to manage users, restaurants, moods, posts, and notifications. Built with React, TypeScript, and Tailwind CSS.",
+  "requestFramePermissions": []
+}
