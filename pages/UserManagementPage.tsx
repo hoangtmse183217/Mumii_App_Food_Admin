@@ -180,7 +180,8 @@ const UserManagementPage = () => {
             <Pagination 
                 currentPage={userHookData.currentPage} 
                 totalPages={userHookData.totalPages} 
-                onPageChange={userHookData.setCurrentPage} 
+                onPageChange={userHookData.setCurrentPage}
+                totalItems={userHookData.totalItems} 
             />
             <UserModals {...userHookData} />
         </div>

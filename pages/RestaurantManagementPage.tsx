@@ -166,6 +166,7 @@ const RestaurantManagementPage = () => {
         currentPage={hookData.currentPage}
         totalPages={hookData.totalPages}
         onPageChange={hookData.setCurrentPage}
+        totalItems={hookData.totalItems}
       />
 
       {/* All modals are rendered here, driven by state from the hook */}

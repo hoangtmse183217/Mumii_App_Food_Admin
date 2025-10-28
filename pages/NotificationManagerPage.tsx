@@ -168,7 +168,12 @@ const NotificationManagerPage = () => {
             
             <NotificationFilter {...notificationHookData} />
             <NotificationTable {...notificationHookData} />
-            <Pagination currentPage={notificationHookData.currentPage} totalPages={notificationHookData.totalPages} onPageChange={notificationHookData.setCurrentPage} />
+            <Pagination 
+                currentPage={notificationHookData.currentPage} 
+                totalPages={notificationHookData.totalPages} 
+                onPageChange={notificationHookData.setCurrentPage}
+                totalItems={notificationHookData.totalItems}
+            />
             <NotificationModals {...notificationHookData} />
         </div>
     );

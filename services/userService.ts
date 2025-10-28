@@ -27,4 +27,17 @@ export const userService = {
       method: 'POST',
     });
   },
+  getPartnerRequests: (signal?: AbortSignal): Promise<GetAllUsersResponse> => {
+    return apiClient<GetAllUsersResponse>('/users/partner-requests', { signal });
+  },
+  approvePartner: (id: number): Promise<void> => {
+    return apiClient<void>(`/users/${id}/approve-partner`, {
+      method: 'POST',
+    });
+  },
+  declinePartner: (id: number): Promise<void> => {
+    return apiClient<void>(`/users/${id}/decline-partner`, {
+      method: 'POST',
+    });
+  },
 };

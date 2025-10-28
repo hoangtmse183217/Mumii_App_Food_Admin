@@ -12,6 +12,7 @@ import MoodManagementPage from '../pages/MoodManagementPage';
 import PostManagementPage from '../pages/PostManagementPage';
 import NotificationManagerPage from '../pages/NotificationManagerPage';
 import NotFoundPage from '../pages/NotFoundPage';
+import PartnerRequestPage from '../pages/PartnerRequestPage';
 
 const PrivateRoute: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const { isAuthenticated } = useAuth();

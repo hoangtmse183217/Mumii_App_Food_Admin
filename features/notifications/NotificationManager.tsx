@@ -128,10 +128,18 @@ const NotificationManager = () => {
     useEffect(() => {
         const newTotalPages = Math.ceil(processedNotifications.length / ITEMS_PER_PAGE);
         setTotalPages(newTotalPages);
-        if (currentPage > newTotalPages) {
-            setCurrentPage(newTotalPages || 1);
-        }
-    }, [processedNotifications, currentPage]);
+
+        // If the current page is now out of bounds after filtering, reset it.
+        // This uses a functional update to prevent an infinite loop caused by the previous implementation.
+        setCurrentPage(current => {
+            if (current > newTotalPages) {
+                // If there are no results, go to page 1. Otherwise, go to the last valid page.
+                return newTotalPages > 0 ? newTotalPages : 1;
+            }
+            // Otherwise, stay on the current page. Using the same value will prevent a re-render.
+            return current;
+        });
+    }, [processedNotifications]);
 
     const paginatedNotifications = useMemo(() => {
         const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

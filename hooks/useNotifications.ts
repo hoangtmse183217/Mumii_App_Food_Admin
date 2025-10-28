@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useMemo, useCallback, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, useCallback, ChangeEvent, FormEvent, useMemo } from 'react';
 import { Notification } from '../types';
 import { useLoading } from './useLoading';
 import { useToast } from './useToast';
@@ -15,16 +14,11 @@ export const useNotifications = () => {
     // State
     const [allNotifications, setAllNotifications] = useState<Notification[]>([]);
     const [filters, setFilters] = useState(initialFilters);
-    const [submittedFilters, setSubmittedFilters] = useState(initialFilters);
     const [sorting, setSorting] = useState<{ column: keyof Notification; direction: 'asc' | 'desc' }>({ column: 'createdAt', direction: 'desc' });
     const [currentPage, setCurrentPage] = useState(1);
 
     // Modal & Form State
-    const [modalState, setModalState] = useState({
-        isSendOpen: false,
-        isBroadcastOpen: false,
-        isEditOpen: false,
-    });
+    const [modalState, setModalState] = useState({ isSendOpen: false, isBroadcastOpen: false, isEditOpen: false });
     const [isCustomTitle, setIsCustomTitle] = useState(false);
     const [notificationData, setNotificationData] = useState({ userId: '', title: '', content: '' });
     const [broadcastData, setBroadcastData] = useState({ title: '', content: '' });
@@ -33,13 +27,12 @@ export const useNotifications = () => {
     const [confirmDeleteState, setConfirmDeleteState] = useState({ isOpen: false, idToDelete: null as number | null });
     const [formError, setFormError] = useState('');
     
-    // Fetching Data
+    // Fetching Data (Client-side)
     const fetchAllNotifications = useCallback(async (signal: AbortSignal) => {
         showLoader();
         try {
             const data = await notificationService.getAll(signal);
-            const notifications = data?.items || (Array.isArray(data) ? data : []);
-            setAllNotifications(notifications);
+            setAllNotifications(data.items || []);
         } catch (error) {
             if (error instanceof Error && error.name === 'AbortError') {
                 console.log('Fetch aborted');
@@ -58,17 +51,26 @@ export const useNotifications = () => {
         return () => controller.abort();
     }, [fetchAllNotifications]);
 
-    // Data Processing
+    // Data Processing (Client-side Filtering, Sorting)
     const processedNotifications = useMemo(() => {
         let filtered = [...allNotifications];
-        if (submittedFilters.userId) filtered = filtered.filter(n => String(n.userId).includes(submittedFilters.userId));
-        if (submittedFilters.status) filtered = filtered.filter(n => n.isRead === (submittedFilters.status === 'true'));
-        if (submittedFilters.startDate) filtered = filtered.filter(n => new Date(n.createdAt) >= new Date(submittedFilters.startDate));
-        if (submittedFilters.endDate) {
-            const endDate = new Date(submittedFilters.endDate);
-endDate.setHours(23, 59, 59, 999);
+
+        if (filters.userId) {
+            filtered = filtered.filter(n => String(n.userId).includes(filters.userId));
+        }
+        if (filters.status) {
+            const isRead = filters.status === 'true';
+            filtered = filtered.filter(n => n.isRead === isRead);
+        }
+        if (filters.startDate) {
+            filtered = filtered.filter(n => new Date(n.createdAt) >= new Date(filters.startDate));
+        }
+        if (filters.endDate) {
+            const endDate = new Date(filters.endDate);
+            endDate.setHours(23, 59, 59, 999);
             filtered = filtered.filter(n => new Date(n.createdAt) <= endDate);
         }
+
         filtered.sort((a, b) => {
             const valA = a[sorting.column];
             const valB = b[sorting.column];
@@ -76,25 +78,35 @@ endDate.setHours(23, 59, 59, 999);
             const comparison = valA < valB ? -1 : valA > valB ? 1 : 0;
             return sorting.direction === 'asc' ? comparison : -comparison;
         });
+
         return filtered;
-    }, [allNotifications, submittedFilters, sorting]);
+    }, [allNotifications, filters, sorting]);
 
     // Pagination
     const totalPages = Math.ceil(processedNotifications.length / ITEMS_PER_PAGE);
-    const paginatedNotifications = useMemo(() => processedNotifications.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [processedNotifications, currentPage]);
+    const paginatedNotifications = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return processedNotifications.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [processedNotifications, currentPage]);
 
     useEffect(() => {
-        if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages);
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        } else if (currentPage === 0 && totalPages > 0) {
+            setCurrentPage(1);
+        }
     }, [totalPages, currentPage]);
 
-    useEffect(() => { setCurrentPage(1) }, [submittedFilters, sorting]);
-
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filters, sorting]);
+    
     // Handlers
     const handleSort = (column: keyof Notification) => setSorting(prev => ({ column, direction: prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc' }));
     const handleFilterChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    const handleFilterSubmit = (e: FormEvent) => { e.preventDefault(); setSubmittedFilters(filters); };
-    const handleClearFilters = () => { setFilters(initialFilters); setSubmittedFilters(initialFilters); };
-
+    const handleFilterSubmit = (e: FormEvent) => { e.preventDefault(); /* Filters are applied live via useMemo */ };
+    const handleClearFilters = () => { setFilters(initialFilters); };
+    
     const handleOpenModal = (modalName: 'isSendOpen' | 'isBroadcastOpen' | 'isEditOpen', notification?: Notification) => {
         setFormError('');
         if (notification) {
@@ -109,10 +121,10 @@ endDate.setHours(23, 59, 59, 999);
     };
     const handleCloseModals = () => setModalState({ isSendOpen: false, isBroadcastOpen: false, isEditOpen: false });
     
-    const refetch = () => {
+    const refetch = useCallback(() => {
         const controller = new AbortController();
         fetchAllNotifications(controller.signal);
-    };
+    }, [fetchAllNotifications]);
 
     // CRUD Handlers
     const handleSendNotification = async (e: FormEvent) => {
@@ -129,7 +141,6 @@ endDate.setHours(23, 59, 59, 999);
             refetch();
         } catch (error) {
             setFormError(error instanceof Error ? error.message : 'An unknown error occurred.');
-        } finally {
             hideLoader();
         }
     };
@@ -148,7 +159,6 @@ endDate.setHours(23, 59, 59, 999);
             refetch();
         } catch (error) {
             setFormError(error instanceof Error ? error.message : 'An unknown error occurred.');
-        } finally {
             hideLoader();
         }
     };
@@ -167,7 +177,6 @@ endDate.setHours(23, 59, 59, 999);
             refetch();
         } catch (error) {
             setFormError(error instanceof Error ? error.message : 'An unknown error occurred.');
-        } finally {
             hideLoader();
         }
     };
@@ -196,6 +205,7 @@ endDate.setHours(23, 59, 59, 999);
         sorting,
         currentPage,
         totalPages,
+        totalItems: processedNotifications.length,
         modalState,
         isCustomTitle,
         notificationData,

@@ -7,7 +7,6 @@ const POST_API_BASE = 'http://localhost:8083/api/admin';
 interface GetAllPostsParams {
     page: number;
     pageSize: number;
-    partnerId?: number;
 }
 
 interface GetAllPostsResponse {
@@ -24,9 +23,6 @@ export const postService = {
         page: String(params.page),
         pageSize: String(params.pageSize),
     });
-    if (params.partnerId) {
-        query.set('partnerId', String(params.partnerId));
-    }
     return apiClient<GetAllPostsResponse>(`/posts?${query.toString()}`, { baseUrlOverride: POST_API_BASE, signal });
   },
 
@@ -39,6 +35,34 @@ export const postService = {
       method: 'PUT',
       baseUrlOverride: POST_API_BASE,
       data,
+    });
+  },
+
+  approve: (id: number): Promise<string> => {
+    return apiClient<string>(`/posts/${id}/approve`, {
+      method: 'POST',
+      baseUrlOverride: POST_API_BASE,
+    });
+  },
+
+  remove: (id: number): Promise<string> => {
+    return apiClient<string>(`/posts/${id}/remove`, {
+      method: 'POST',
+      baseUrlOverride: POST_API_BASE,
+    });
+  },
+
+  decline: (id: number): Promise<string> => {
+    return apiClient<string>(`/posts/${id}/decline`, {
+      method: 'POST',
+      baseUrlOverride: POST_API_BASE,
+    });
+  },
+
+  delete: (id: number): Promise<string> => {
+    return apiClient<string>(`/posts/${id}`, {
+      method: 'DELETE',
+      baseUrlOverride: POST_API_BASE,
     });
   },
 };

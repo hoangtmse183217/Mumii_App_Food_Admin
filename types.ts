@@ -74,7 +74,7 @@ export interface Post {
     id: number;
     title: string;
     author: string;
-    status: 'PENDING' | 'APPROVED' | 'REMOVED';
+    status: 'PENDING' | 'APPROVED' | 'DECLINED';
     createdAt: string;
 
     // Optional fields for detailed view

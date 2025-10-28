@@ -260,6 +260,7 @@ export const useRestaurants = () => {
         isLoading,
         restaurants: paginatedRestaurants,
         totalPages,
+        totalItems: processedRestaurants.length,
         currentPage,
         activeTab,
         

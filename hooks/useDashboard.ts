@@ -76,14 +76,12 @@ export const useDashboard = () => {
                 userService.getAll(signal),
                 restaurantService.getAll({ page: 1, pageSize: 1000 }, signal), // Fetch ALL restaurants
                 moodService.getMoods(),
-                // FIX: Changed from non-existent `getPosts` to `getAll` to align with `postService`.
                 postService.getAll({ page: 1, pageSize: 1000 }, signal),
             ]);
 
             const allUsers = usersData.items || (Array.isArray(usersData) ? usersData : []);
             const allRestaurants = allRestaurantsData.items || [];
             const allMoods = Array.isArray(moodsData) ? moodsData : [];
-            // FIX: The response from `postService.getAll` is an object with an `items` array, not a direct array.
             const allPosts = postsData.items || [];
             
             // Filter restaurants by status on the frontend
@@ -105,14 +103,34 @@ export const useDashboard = () => {
                 pendingPosts,
             });
 
-            // Process Chart Data for Chart.js
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-            const simulatedUserCounts = months.map((_, i) => Math.floor(Math.random() * (150 + i * 20) + 50));
+            // --- Process Chart Data ---
+
+            // 1. User Growth Chart (Last 6 months)
+            const now = new Date();
+            const userGrowthLabels: string[] = [];
+            const userGrowthData: number[] = Array(6).fill(0);
+
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                userGrowthLabels.push(`T${d.getMonth() + 1}/${d.getFullYear()}`);
+            }
+
+            allUsers.forEach(user => {
+                const userDate = new Date(user.createdAt);
+                const monthDiff = (now.getFullYear() - userDate.getFullYear()) * 12 + (now.getMonth() - userDate.getMonth());
+                if (monthDiff >= 0 && monthDiff < 6) {
+                    const index = 5 - monthDiff;
+                    if (index >= 0 && index < 6) {
+                        userGrowthData[index]++;
+                    }
+                }
+            });
+
             const userGrowth: ChartJsData = {
-                labels: months,
+                labels: userGrowthLabels,
                 datasets: [{
                     label: 'Người dùng mới',
-                    data: simulatedUserCounts,
+                    data: userGrowthData,
                     fill: true,
                     borderColor: '#E57373',
                     backgroundColor: 'rgba(229, 115, 115, 0.2)',
@@ -120,6 +138,7 @@ export const useDashboard = () => {
                 }]
             };
             
+            // 2. Restaurant Status Chart
             const restaurantStatus: ChartJsData = {
                 labels: ['Đang chờ', 'Đã duyệt', 'Đã từ chối'],
                 datasets: [{

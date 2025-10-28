@@ -192,6 +192,7 @@ export const useUsers = () => {
         sorting,
         currentPage,
         totalPages,
+        totalItems: processedUsers.length,
         isDetailModalOpen,
         isEditModalOpen,
         selectedUser,
