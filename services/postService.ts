@@ -1,8 +1,7 @@
-
 import { apiClient } from './apiClient';
 import { Post, PostUpdatePayload } from '../types';
 
-const POST_API_BASE = 'http://localhost:8083/api/admin';
+const POST_API_BASE = 'https://mumii-social.onrender.com/api/admin';
 
 interface GetAllPostsParams {
     page: number;

@@ -1,4 +1,3 @@
-
 import { apiClient } from './apiClient';
 import { User } from '../types';
 
@@ -12,7 +11,8 @@ export const authService = {
     return apiClient<LoginResponse>('/auth/login', {
       method: 'POST',
       data: { email, password },
-      isAuthRequest: true
+      isAuthRequest: true,
+      noAuth: true,
     });
   },
   logout: (): Promise<void> => {

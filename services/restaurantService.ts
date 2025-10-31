@@ -1,8 +1,7 @@
-
 import { apiClient } from './apiClient';
 import { Restaurant, RestaurantStatus } from '../types';
 
-const RESTAURANT_API_BASE = 'http://localhost:8082/api/admin';
+const RESTAURANT_API_BASE = 'https://mumii-discovery.onrender.com/api/admin';
 
 interface GetAllRestaurantsParams {
     page: number;

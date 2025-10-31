@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ICONS } from '../../constants';
+import { authService } from '../../services/authService';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: ICONS.dashboard },
@@ -24,15 +24,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
 
   const handleLogout = async () => {
     try {
-      if (user?.accessToken) {
-        // This could be moved to an authService call
-        await fetch('http://localhost:8081/api/auth/logout', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${user.accessToken}` },
-        });
-      }
+      await authService.logout();
     } catch (error) {
       console.error("Failed to call logout API:", error);
+      // Even if API fails, we should log the user out from the client
     } finally {
       logout();
       navigate('/login');

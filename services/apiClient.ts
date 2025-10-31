@@ -1,4 +1,3 @@
-
 const getAuthToken = (): string | null => {
     const storedUser = localStorage.getItem('adminUser');
     if (!storedUser) return null;
@@ -11,13 +10,14 @@ const getAuthToken = (): string | null => {
     }
 };
 
-const AUTH_BASE_URL = 'http://localhost:8081/api';
-const DEFAULT_BASE_URL = 'http://localhost:8081/api/admin';
+const AUTH_BASE_URL = 'https://mumii-auth.onrender.com/api';
+const DEFAULT_BASE_URL = 'https://mumii-gateway.onrender.com/api/admin';
 
 interface RequestOptions extends RequestInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: any;
     isAuthRequest?: boolean;
+    noAuth?: boolean;
     baseUrlOverride?: string;
     signal?: AbortSignal;
 }
@@ -67,7 +67,7 @@ const handleApiResponse = async (response: Response) => {
 };
 
 export const apiClient = async <T>(endpoint: string, options: RequestOptions = {}): Promise<T> => {
-    const { method = 'GET', headers: customHeaders = {}, body, data, isAuthRequest = false, baseUrlOverride, signal } = options;
+    const { method = 'GET', headers: customHeaders = {}, body, data, isAuthRequest = false, noAuth = false, baseUrlOverride, signal } = options;
     const token = getAuthToken();
 
     const headers: HeadersInit = {
@@ -75,7 +75,7 @@ export const apiClient = async <T>(endpoint: string, options: RequestOptions = {
         ...customHeaders,
     };
 
-    if (token && !isAuthRequest) {
+    if (token && !noAuth) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
