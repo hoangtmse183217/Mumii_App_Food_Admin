@@ -7,7 +7,6 @@ import { authService } from '../../services/authService';
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: ICONS.dashboard },
   { path: '/users', label: 'User Management', icon: ICONS.users },
-  { path: '/partner-requests', label: 'Partner Requests', icon: ICONS.partnerRequests },
   { path: '/restaurants', label: 'Restaurant Management', icon: ICONS.restaurants },
   { path: '/moods', label: 'Mood Management', icon: ICONS.moods },
   { path: '/posts', label: 'Post Management', icon: ICONS.posts },
