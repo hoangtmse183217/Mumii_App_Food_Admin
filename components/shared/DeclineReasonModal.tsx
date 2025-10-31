@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface DeclineReasonModalProps {
@@ -6,7 +5,6 @@ interface DeclineReasonModalProps {
   onClose: () => void;
   onConfirm: () => void;
   reason: string;
-  // FIX: Updated the type of `setReason` to allow passing an updater function.
   setReason: React.Dispatch<React.SetStateAction<string>>;
   restaurantName: string;
 }
