@@ -57,11 +57,12 @@
   <script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
-    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0"
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
   }
 }
 </script>
@@ -70,5 +71,6 @@
   <body class="bg-primary text-text-primary font-sans">
     <div id="root"></div>
     <div id="toast-portal"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
