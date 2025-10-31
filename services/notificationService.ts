@@ -1,7 +1,7 @@
 import { apiClient } from './apiClient';
 import { Notification } from '../types';
 
-const NOTIFICATION_API_BASE = 'https://mumii-social.onrender.com/api/admin';
+const NOTIFICATION_API_BASE = 'https://mumii-auth.onrender.com/api/admin';
 
 interface GetAllNotificationsParams {
     page: number;
