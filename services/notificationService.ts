@@ -1,6 +1,8 @@
 import { apiClient } from './apiClient';
 import { Notification } from '../types';
 
+const NOTIFICATION_API_BASE = 'https://mumii-social.onrender.com/api/admin';
+
 interface GetAllNotificationsParams {
     page: number;
     pageSize: number;
@@ -49,29 +51,33 @@ export const notificationService = {
             page: '1',
             pageSize: '1000', // Assuming 1000 is high enough to get all notifications
         });
-        return apiClient<GetAllNotificationsResponse>(`/notifications?${query.toString()}`, { signal });
+        return apiClient<GetAllNotificationsResponse>(`/notifications?${query.toString()}`, { signal, baseUrlOverride: NOTIFICATION_API_BASE });
     },
     sendToUser: (payload: SendNotificationPayload): Promise<Notification> => {
         return apiClient<Notification>('/notifications/send-to-user', {
             method: 'POST',
             data: payload,
+            baseUrlOverride: NOTIFICATION_API_BASE,
         });
     },
     broadcast: (payload: BroadcastPayload): Promise<Notification[]> => {
         return apiClient<Notification[]>('/notifications/broadcast', {
             method: 'POST',
             data: payload,
+            baseUrlOverride: NOTIFICATION_API_BASE,
         });
     },
     update: (id: number, payload: UpdateNotificationPayload): Promise<Notification> => {
         return apiClient<Notification>(`/notifications/${id}`, {
             method: 'PUT',
             data: payload,
+            baseUrlOverride: NOTIFICATION_API_BASE,
         });
     },
     delete: (id: number): Promise<DeleteResponse> => {
         return apiClient<DeleteResponse>(`/notifications/${id}`, {
             method: 'DELETE',
+            baseUrlOverride: NOTIFICATION_API_BASE,
         });
     },
 };

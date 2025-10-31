@@ -11,7 +11,6 @@ const getAuthToken = (): string | null => {
 };
 
 const AUTH_BASE_URL = 'https://mumii-auth.onrender.com/api';
-const DEFAULT_BASE_URL = 'https://mumii-gateway.onrender.com/api/admin';
 
 interface RequestOptions extends RequestInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,7 +91,10 @@ export const apiClient = async <T>(endpoint: string, options: RequestOptions = {
         config.body = body;
     }
     
-    const baseUrl = baseUrlOverride || (isAuthRequest ? AUTH_BASE_URL : DEFAULT_BASE_URL);
+    const baseUrl = baseUrlOverride || (isAuthRequest ? AUTH_BASE_URL : null);
+    if (!baseUrl) {
+        throw new Error(`apiClient: No base URL specified for endpoint "${endpoint}". Please provide a baseUrlOverride.`);
+    }
     const url = `${baseUrl}${endpoint}`;
     
     const response = await fetch(url, config);
