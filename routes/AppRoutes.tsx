@@ -35,6 +35,7 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="/dashboard" />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="users" element={<UserManagementPage />} />
+        <Route path="partner-requests" element={<PartnerRequestPage />} />
         <Route path="restaurants" element={<RestaurantManagementPage />} />
         <Route path="moods" element={<MoodManagementPage />} />
         <Route path="posts" element={<PostManagementPage />} />
