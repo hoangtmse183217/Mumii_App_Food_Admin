@@ -1,7 +1,7 @@
 import { apiClient } from './apiClient';
 import { Mood } from '../types';
 
-const MOOD_API_BASE = 'https://mumii-social.onrender.com/api';
+const MOOD_API_BASE = 'https://mumii-social.onrender.com/api/admin';
 
 export const moodService = {
   getMoods: (): Promise<Mood[]> => {
